@@ -3,6 +3,9 @@
     <PropertyGroup>
         <TargetFramework>netcoreapp3.1</TargetFramework>
         <Nullable>enable</Nullable>
+        <Authors>Jonathan Lemos</Authors>
+        <Description>A JSON Deep Equal library for unit tests that works well.</Description>
+        <Title>JsonDeepEqualAssertions</Title>
     </PropertyGroup>
 
 </Project>

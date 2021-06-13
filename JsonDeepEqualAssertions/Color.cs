@@ -2,7 +2,7 @@ using System;
 
 namespace JsonDeepEqualAssertions
 {
-    public static class Color
+    internal static class Color
     {
         public static string Red(string input)
         {

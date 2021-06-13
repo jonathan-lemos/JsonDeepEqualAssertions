@@ -254,12 +254,15 @@ namespace JsonDeepEqualAssertions
             }
             catch (JsonException e)
             {
-                errors.Add(InvalidJsonDifference(JsonTarget.Expected, expectedJson, e));
+                errors.Add(InvalidJsonDifference(JsonTarget.Actual, expectedJson, e));
             }
 
             return (expected, actual, errors);
         }
 
+        /// <summary>
+        /// Finds the differences between two JSON strings.
+        /// </summary>
         public static IEnumerable<JsonDifference> FindDifferences(string expectedJson, string actualJson,
             JsonDeepEqualOptions options)
         {
@@ -273,12 +276,18 @@ namespace JsonDeepEqualAssertions
             return FindDifferences(expected!.Value, actual!.Value, new JsonDeepEqualContext(options));
         }
 
+        /// <summary>
+        /// Finds the differences between two JSON strings.
+        /// </summary>
         public static IEnumerable<JsonDifference> FindDifferences(string expectedJson, string actualJson)
         {
             return FindDifferences(expectedJson, actualJson, new JsonDeepEqualOptions());
         }
-
-        public static void AssertEqual(string expectedJson, string actualJson, Action<string> ifNotEqual)
+       
+        /// <summary>
+        /// Asserts that two JSON strings are equal, calling ifNotEqual with a descriptive error message if they aren't.
+        /// </summary>
+        public static void AssertEqual(string expectedJson, string actualJson, Action<string> ifNotEqual, JsonDeepEqualOptions options)
         {
             var (expected, actual, errors) = ParseExpectedAndActualJson(expectedJson, actualJson);
 
@@ -291,7 +300,7 @@ one or more arguments were not valid JSON:
                 return;
             }
 
-            var differences = FindDifferences(expectedJson, actualJson).ToList();
+            var differences = FindDifferences(expectedJson, actualJson, options).ToList();
             if (!differences.Any())
             {
                 return;
@@ -314,6 +323,14 @@ expected:
 actual:
 {JsonPrinter.PrintElement(actual!.Value, actPaths)}
 ".Trim());
+        }
+
+        /// <summary>
+        /// Asserts that two JSON strings are equal, calling ifNotEqual with a descriptive error message if they aren't.
+        /// </summary>
+        public static void AssertEqual(string expectedJson, string actualJson, Action<string> ifNotEqual)
+        {
+            AssertEqual(expectedJson, actualJson, ifNotEqual, new JsonDeepEqualOptions());
         }
     }
 }

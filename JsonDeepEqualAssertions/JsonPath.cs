@@ -28,14 +28,14 @@ namespace JsonDeepEqualAssertions
             return $"{string.Join("", Components)}";
         }
 
-        public bool Equals(JsonPath other)
+        public bool Equals(JsonPath? other)
         {
             if (ReferenceEquals(null, other)) return false;
             if (ReferenceEquals(this, other)) return true;
             return Components.SequenceEqual(other.Components);
         }
 
-        public override bool Equals(object obj)
+        public override bool Equals(object? obj)
         {
             if (ReferenceEquals(null, obj)) return false;
             if (ReferenceEquals(this, obj)) return true;
@@ -45,11 +45,6 @@ namespace JsonDeepEqualAssertions
 
         public override int GetHashCode()
         {
-            if (Components == null)
-            {
-                return 0;
-            }
-
             return Components.Aggregate(0, (a, c) =>
             {
                 unchecked

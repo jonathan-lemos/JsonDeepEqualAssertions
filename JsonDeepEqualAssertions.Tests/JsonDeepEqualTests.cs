@@ -136,7 +136,7 @@ namespace JsonDeepEqualAssertions.Tests
         [TestCase(
             "[1, 2]",
             "[1, 1]",
-                "actual[1]",
+            "actual[1]",
             "expected[1]"
         )]
         [TestCase(
@@ -162,9 +162,94 @@ namespace JsonDeepEqualAssertions.Tests
             "expected[3]",
             "expected[4]"
         )]
+        [TestCase(
+            "[1, 2, 3, 4, 5]",
+            "[1, 2, 3]",
+            "expected[3]",
+            "expected[4]"
+        )]
+        [TestCase(
+            "true",
+            "false",
+            "expected"
+        )]
+        [TestCase(
+            "\"hello\"",
+            "\"world\"",
+            "expected"
+        )]
+        [TestCase(
+            "foo",
+            "\"world\"",
+            "expected"
+        )]
+        [TestCase(
+            "\"foo\"",
+            "bar",
+            "actual"
+        )]
+        [TestCase(
+            "foo",
+            "bar",
+            "expected",
+            "actual"
+        )]
         public void AssertAreNotEquivalent(string expected, string actual, params string[] jsonPaths)
         {
             var diff = JsonDeepEqual.FindDifferences(expected, actual).ToList();
+            Assert.AreEqual(
+                jsonPaths.OrderBy(x => x).ToList(),
+                diff.Select(x => $"{x.Target.ToString().ToLower()}{x.Path}").OrderBy(x => x).ToList()
+            );
+        }
+
+        [TestCase(
+            "[1, 2, 3]",
+            "[1, 2, 3]"
+        )]
+        public void AssertAreArrayEquivalent(string expected, string actual)
+        {
+            var diff = JsonDeepEqual.FindDifferences(expected, actual, new JsonDeepEqualOptions
+            {
+                IgnoreArrayOrdering = false
+            });
+            Assert.IsEmpty(diff);
+        }
+
+
+        [TestCase(
+            "[1, 2, 3]",
+            "[2, 1, 3]",
+            "expected[0]",
+            "expected[1]"
+        )]
+        [TestCase(
+            "[1, 2, 3]",
+            "[1, 2, 3, 4]",
+                "actual[3]"
+        )]
+        [TestCase(
+            "[1, 2, 3, 4]",
+            "[1, 2, 3]",
+            "expected[3]"
+        )]
+        
+        [TestCase(
+            "[1, 2, 3]",
+            "[1, 2, 3, 3]",
+                "actual[3]"
+        )]
+        [TestCase(
+            "[1, 2, 3, 3]",
+            "[1, 2, 3]",
+            "expected[3]"
+        )]
+        public void AssertAreNotArrayEquivalent(string expected, string actual, params string[] jsonPaths)
+        {
+            var diff = JsonDeepEqual.FindDifferences(expected, actual, new JsonDeepEqualOptions
+            {
+                IgnoreArrayOrdering = false
+            }).ToList();
             Assert.AreEqual(
                 jsonPaths.OrderBy(x => x).ToList(),
                 diff.Select(x => $"{x.Target.ToString().ToLower()}{x.Path}").OrderBy(x => x).ToList()
@@ -176,7 +261,7 @@ namespace JsonDeepEqualAssertions.Tests
         {
             var expected = "{\"a\": 4, \"b\": 5, \"c\": 6, \"d\": [1, 2, 3]}";
             var actual = "{\"a\": 5, \"c\": 6, \"d\": [2, 4]}";
-            
+
             JsonDeepEqual.AssertEqual(expected, actual, Console.WriteLine);
             Assert.Pass();
         }
